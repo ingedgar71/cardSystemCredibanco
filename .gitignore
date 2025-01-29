@@ -1,0 +1,115 @@
+### Archivos generales ###
+target/
+bin/
+out/
+*.class
+*.war
+*.jar
+*.ear
+*.log
+hs_err_pid*
+replay_pid*
+*.swp
+*.swo
+*.DS_Store
+*.iml
+*.ipr
+*.iws
+
+### Configuración de Git ###
+.idea/
+.vscode/
+*.orig
+!.gitattributes
+!.gitignore
+
+### Configuración de Maven ###
+.mvn/
+!**/src/main/**/.mvn/
+target/
+dependency-reduced-pom.xml
+buildNumber.properties
+.m2/
+
+### Configuración de Gradle ###
+.gradle/
+build/
+!gradle-wrapper.jar
+.gradle/**
+build/**
+!**/src/main/**/.gradle/
+
+### Configuración de IntelliJ IDEA ###
+*.iml
+*.ipr
+*.iws
+.idea/
+.idea_modules/
+
+### Configuración de Eclipse ###
+*.metadata
+*.classpath
+*.project
+*.settings/
+.factorypath
+
+### Configuración de archivos de sistema ###
+*.log
+logs/
+*.tmp
+*.swp
+*.swo
+*.bak
+*.old
+
+### Configuración de Docker ###
+docker-compose.override.yml
+*.pid
+
+### Configuración de Spring Boot ###
+.env
+application.properties
+application.yml
+application-*.properties
+application-*.yml
+
+### Archivos de base de datos ###
+*.h2.db
+*.mv.db
+*.sqlite
+db/
+database/
+dump.rdb
+
+### Configuración de AWS ###
+.aws/
+*.pem
+*.key
+credentials
+
+### Archivos generados por MapStruct ###
+target/generated-sources/
+target/generated-test-sources/
+
+### Archivos específicos de AWS CodeBuild ###
+codebuild/
+
+### Dependencias de Node.js (si usas frontend con Angular) ###
+node_modules/
+dist/
+npm-debug.log*
+yarn-error.log*
+.pnp/
+.pnp.js
+
+### Tailwind CSS ###
+.postcssrc.js
+.tailwind.config.js
+tailwind.css
+tailwind-output.css
+
+### Configuración de AWS y credenciales ###
+.aws/
+*.pem
+*.key
+credentials
