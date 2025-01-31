@@ -5,6 +5,8 @@ import java.time.YearMonth;
 
 public class DateUtil {
 
+    private DateUtil(){}
+
     /**
      * Método que retorna el número de días de un mes dado el mes y el año
      */
@@ -51,11 +53,14 @@ public class DateUtil {
      * El dia de la fecha devuelta corresponde al ultimo dia del mes
      * */
     public static LocalDate getPlusYears(LocalDate date, int years){
-        int diasMes = date.lengthOfMonth();
-        int mes = date.getMonth().getValue();
-        int anio = date.getYear();
+        LocalDate newDate = date.plusYears(years);
+
+        int diasMes = newDate.lengthOfMonth();
+        int mes = newDate.getMonth().getValue();
+        int anio = newDate.getYear();
 
         return getLocalDate(anio, mes, diasMes);
+
     }
 
 

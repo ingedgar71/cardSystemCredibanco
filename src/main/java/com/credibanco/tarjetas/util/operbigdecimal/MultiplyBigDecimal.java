@@ -1,9 +1,11 @@
-package com.credibanco.tarjetas.util.operBigDecimal;
+package com.credibanco.tarjetas.util.operbigdecimal;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 public class MultiplyBigDecimal{
+    
+    private MultiplyBigDecimal(){}
 
     public static BigDecimal execute(BigDecimal num1, BigDecimal num2) {
 

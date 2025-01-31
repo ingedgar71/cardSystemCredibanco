@@ -3,7 +3,6 @@ package com.credibanco.tarjetas.persistencia.model;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -18,7 +17,7 @@ public class TransactionEntity {
     @Column(name = "transaction_number",nullable = false)
     private String transactionNumber;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_card", nullable = false)
     private CardEntity cardEntity;
     //monto de la transacción

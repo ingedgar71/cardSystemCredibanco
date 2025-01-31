@@ -1,4 +1,4 @@
-package com.credibanco.tarjetas.util.operBigDecimal;
+package com.credibanco.tarjetas.util.operbigdecimal;
 
 import java.math.BigDecimal;
 

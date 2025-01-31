@@ -1,11 +1,14 @@
 package com.credibanco.tarjetas.service;
 
+import com.credibanco.tarjetas.dto.transaction.RequestCancelTransaction;
+import com.credibanco.tarjetas.dto.transaction.RequestCheckTransaction;
+import com.credibanco.tarjetas.dto.transaction.ResponseCheckTransaction;
 import com.credibanco.tarjetas.persistencia.model.CardEntity;
 import com.credibanco.tarjetas.persistencia.model.TransactionEntity;
 import com.credibanco.tarjetas.persistencia.repository.CardJpaRepository;
 import com.credibanco.tarjetas.persistencia.repository.TransactionJpaRepository;
 import com.credibanco.tarjetas.util.aleatory.RandomNumberGenerator;
-import com.credibanco.tarjetas.util.operBigDecimal.SubtractBigDecimal;
+import com.credibanco.tarjetas.util.operbigdecimal.SubtractBigDecimal;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -30,7 +33,7 @@ public class TransactionService {
             throw new IllegalArgumentException("cardId no valido");
         }
 
-        if (price != null && price.compareTo(BigDecimal.ZERO) < 0) {
+        if (price == null || price.compareTo(BigDecimal.ZERO) < 0) {
             throw new IllegalArgumentException("El precio no puede nulo o menor a 0");
         }
 
@@ -40,11 +43,11 @@ public class TransactionService {
             throw new IllegalArgumentException("Tarjeta no existe");
         }
 
-        if (cardEntity.getBlocked()) {
+        if (cardEntity.getBlocked().booleanValue()) {
             throw new IllegalArgumentException("la tarjeta se encuentra bloqueada");
         }
 
-        if (!cardEntity.getActive()) {
+        if (!cardEntity.getActive().booleanValue()) {
             throw new IllegalArgumentException("la tarjeta no se encuentra activada");
         }
 
@@ -80,9 +83,25 @@ public class TransactionService {
 
     }
 
-    public void cancelTransaction(String cardId, String transactionId) {
+    public ResponseCheckTransaction checkTransaction(RequestCheckTransaction transaction) {
+        TransactionEntity transactionEntity = transactionJpaRepository.findByTransactionNumberAndCardEntityCardNumber(transaction.getTransactionId(), transaction.getCardId());
+        ResponseCheckTransaction transaction1 = new ResponseCheckTransaction();
 
-        TransactionEntity transactionEntity = transactionJpaRepository.findByTransactionNumber(transactionId);
+        transaction1.setCardId(transactionEntity.getCardEntity().getCardNumber());
+        transaction1.setTransactionDate(transactionEntity.getTimestamp());
+        transaction1.setAmount(transactionEntity.getAmount());
+        transaction1.setCancelled(transactionEntity.getCancelled());
+        return transaction1;
+    }
+
+    public void cancelTransaction(RequestCancelTransaction transaction) {
+
+        TransactionEntity transactionEntity = transactionJpaRepository.findByTransactionNumberAndCardEntityCardNumber(transaction.getTransactionId(), transaction.getCardId());
+
+        if(transactionEntity == null){
+            throw new IllegalArgumentException("La transacción que se desea anular no existe.");
+        }
+
         transactionEntity.setCancelled(true);
 
         transactionJpaRepository.save(transactionEntity);

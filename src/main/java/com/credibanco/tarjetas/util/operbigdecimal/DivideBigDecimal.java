@@ -1,10 +1,13 @@
-package com.credibanco.tarjetas.util.operBigDecimal;
+package com.credibanco.tarjetas.util.operbigdecimal;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
 
 public class DivideBigDecimal{
+
+    private DivideBigDecimal() {
+    }
 
     public static BigDecimal execute(BigDecimal num1, BigDecimal num2) {
 

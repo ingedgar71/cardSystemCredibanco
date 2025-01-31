@@ -1,24 +1,23 @@
 package com.credibanco.tarjetas.service;
 
 import com.credibanco.tarjetas.dto.BalanceCard;
-import com.credibanco.tarjetas.dto.Card;
 import com.credibanco.tarjetas.dto.card.RequestCreateCard;
 import com.credibanco.tarjetas.persistencia.model.CardEntity;
 import com.credibanco.tarjetas.persistencia.repository.CardJpaRepository;
 import com.credibanco.tarjetas.util.DateUtil;
 import com.credibanco.tarjetas.util.aleatory.RandomNumberGenerator;
-import com.credibanco.tarjetas.util.operBigDecimal.AddBigDecimal;
+import com.credibanco.tarjetas.util.operbigdecimal.AddBigDecimal;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.Month;
-import java.time.Year;
 
 @Service
 public class CardService {
 
-    public final CardJpaRepository cardJpaRepository;
+    private final CardJpaRepository cardJpaRepository;
+    private static final String NUMERO_DE_DIGITOS_INVALIDO = "Numéro de digitos de cardId no valido";
+
 
     public CardService(CardJpaRepository cardJpaRepository) {
         this.cardJpaRepository = cardJpaRepository;
@@ -47,11 +46,11 @@ public class CardService {
 
         return cardEntity1.getCardNumber();
     }
-
+    //Activar Tarjeta
     public void activateCard(String cardId){
 
         if(cardId.length() != 16){
-            throw new IllegalArgumentException("cardId no valido");
+            throw new IllegalArgumentException(NUMERO_DE_DIGITOS_INVALIDO);
         }
         CardEntity cardEntity = cardJpaRepository.findByCardNumber(cardId);
 
@@ -60,11 +59,11 @@ public class CardService {
             cardJpaRepository.save(cardEntity);
         }
     }
-
+    //Bloquear tarjeta
     public void blockCard(String cardId){
 
         if(cardId.length() != 16){
-            throw new IllegalArgumentException("cardId no valido");
+            throw new IllegalArgumentException(NUMERO_DE_DIGITOS_INVALIDO);
         }
         CardEntity cardEntity = cardJpaRepository.findByCardNumber(cardId);
 
@@ -74,17 +73,14 @@ public class CardService {
         }
     }
 
-    public CardEntity findByIdCard(Long idCard){
-        CardEntity cardEntity = cardJpaRepository.findByIdCard(idCard);
-        return cardEntity;
-    }
+
     /**
      * Recargar tarjeta
      * */
     public CardEntity rechargeCard(String cardId, BigDecimal balance){
 
         if(cardId.length() != 16){
-            throw new IllegalArgumentException("cardId no valido");
+            throw new IllegalArgumentException(NUMERO_DE_DIGITOS_INVALIDO);
         }
 
         if(balance.compareTo(BigDecimal.ZERO) < 0){
@@ -97,11 +93,11 @@ public class CardService {
             throw new IllegalArgumentException("Tarjeta no existe");
         }
 
-        if(cardEntity.getBlocked()){
+        if(cardEntity.getBlocked().booleanValue()){
             throw new IllegalArgumentException("la tarjeta se encuentra bloqueada");
         }
 
-        if(!cardEntity.getActive()){
+        if(!cardEntity.getActive().booleanValue()){
             throw new IllegalArgumentException("la tarjeta no se encuentra activada");
         }
 
@@ -112,13 +108,12 @@ public class CardService {
         BigDecimal totalBalance = AddBigDecimal.execute(cardEntity.getBalance(), balance);
         cardEntity.setBalance(totalBalance);
         return cardJpaRepository.save(cardEntity);
-
     }
 
     public BalanceCard checkBalance(String cardId){
 
         if(cardId.length() != 16){
-            throw new IllegalArgumentException("cardId no valido");
+            throw new IllegalArgumentException(NUMERO_DE_DIGITOS_INVALIDO);
         }
         CardEntity cardEntity = cardJpaRepository.findByCardNumber(cardId);
 
@@ -127,7 +122,5 @@ public class CardService {
         balanceCard.setBalance(cardEntity.getBalance());
 
         return balanceCard;
-
-
     }
 }

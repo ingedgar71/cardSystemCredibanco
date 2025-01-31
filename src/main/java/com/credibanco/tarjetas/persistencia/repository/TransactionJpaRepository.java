@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface TransactionJpaRepository extends JpaRepository<TransactionEntity,Long> {
 
-    TransactionEntity findByTransactionNumber(String transactionNumber);
     TransactionEntity findByTransactionNumberAndCardEntityIdCard(String transactionNumber, Long idCard);
+    TransactionEntity findByTransactionNumberAndCardEntityCardNumber(String transactionNumber, String cardNumber);
+
 }

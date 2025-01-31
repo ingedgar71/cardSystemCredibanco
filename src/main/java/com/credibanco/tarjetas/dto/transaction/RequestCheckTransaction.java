@@ -1,6 +1,6 @@
-package com.credibanco.tarjetas.dto;
+package com.credibanco.tarjetas.dto.transaction;
 
-public class CancelTransaction {
+public class RequestCheckTransaction {
     private String cardId;
     private String transactionId;
 

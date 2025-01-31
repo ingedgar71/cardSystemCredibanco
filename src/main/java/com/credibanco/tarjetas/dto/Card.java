@@ -1,10 +1,6 @@
 package com.credibanco.tarjetas.dto;
 
-import jakarta.persistence.Column;
-
-import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 public class Card {
     private String cardNumber;

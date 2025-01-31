@@ -16,8 +16,6 @@ public class CardEntity {
     //Número de tarjeta unico
     @Column(name="card_number", length = 16, nullable = false)
     private String cardNumber;
-//    @Column(name="product_id", length = 6, nullable = false)
-//    private String productId;
     //nombre del titular
     @Column(name="holder_name", length = 100,nullable = false)
     private String holderName;
