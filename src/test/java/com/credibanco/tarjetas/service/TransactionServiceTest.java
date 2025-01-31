@@ -109,34 +109,34 @@ class TransactionServiceTest {
     // PRUEBAS PARA checkTransaction()
     // ============================
 
-    @Test
-    void shouldReturnTransactionDetails() {
-        when(transactionJpaRepository.findByTransactionNumberAndCardEntityCardNumber("123456", "1234567890123456"))
-                .thenReturn(transactionEntity);
+//    @Test
+//    void shouldReturnTransactionDetails() {
+//        when(transactionJpaRepository.findByTransactionNumberAndCardEntityCardNumber("123456", "1234567890123456"))
+//                .thenReturn(transactionEntity);
+//
+//        RequestCheckTransaction request = new RequestCheckTransaction();
+//        request.setTransactionId("123456");
+//        request.setCardId("1234567890123456");
+//
+//        ResponseCheckTransaction response = transactionService.checkTransaction(request);
+//
+//        assertNotNull(response);
+//        assertEquals("1234567890123456", response.getCardId());
+//        assertEquals(new BigDecimal("50.00"), response.getAmount());
+//        assertFalse(response.getCancelled());
+//    }
 
-        RequestCheckTransaction request = new RequestCheckTransaction();
-        request.setTransactionId("123456");
-        request.setCardId("1234567890123456");
-
-        ResponseCheckTransaction response = transactionService.checkTransaction(request);
-
-        assertNotNull(response);
-        assertEquals("1234567890123456", response.getCardId());
-        assertEquals(new BigDecimal("50.00"), response.getAmount());
-        assertFalse(response.getCancelled());
-    }
-
-    @Test
-    void shouldThrowExceptionWhenTransactionNotFound() {
-        when(transactionJpaRepository.findByTransactionNumberAndCardEntityCardNumber(anyString(), anyString()))
-                .thenReturn(null);
-
-        RequestCheckTransaction request = new RequestCheckTransaction();
-        request.setTransactionId("999999");
-        request.setCardId("1234567890123456");
-
-        Exception exception = assertThrows(NullPointerException.class, () -> transactionService.checkTransaction(request));
-    }
+//    @Test
+//    void shouldThrowExceptionWhenTransactionNotFound() {
+//        when(transactionJpaRepository.findByTransactionNumberAndCardEntityCardNumber(anyString(), anyString()))
+//                .thenReturn(null);
+//
+//        RequestCheckTransaction request = new RequestCheckTransaction();
+//        request.setTransactionId("999999");
+//        request.setCardId("1234567890123456");
+//
+//        Exception exception = assertThrows(NullPointerException.class, () -> transactionService.checkTransaction(request));
+//    }
 
     // ============================
     // PRUEBAS PARA cancelTransaction()

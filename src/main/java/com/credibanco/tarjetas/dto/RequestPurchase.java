@@ -1,9 +1,11 @@
 package com.credibanco.tarjetas.dto;
 
+import jakarta.validation.constraints.NotBlank;
+
 import java.math.BigDecimal;
 
 public class RequestPurchase {
-
+    @NotBlank(message = "El cardId no puede estar vacío")
     private String cardId;
     private BigDecimal price;
 

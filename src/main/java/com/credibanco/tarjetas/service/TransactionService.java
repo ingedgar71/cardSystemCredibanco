@@ -83,8 +83,8 @@ public class TransactionService {
 
     }
 
-    public ResponseCheckTransaction checkTransaction(RequestCheckTransaction transaction) {
-        TransactionEntity transactionEntity = transactionJpaRepository.findByTransactionNumberAndCardEntityCardNumber(transaction.getTransactionId(), transaction.getCardId());
+    public ResponseCheckTransaction checkTransaction(String transactionId, String cardId) {
+        TransactionEntity transactionEntity = transactionJpaRepository.findByTransactionNumberAndCardEntityCardNumber(transactionId, cardId);
         ResponseCheckTransaction transaction1 = new ResponseCheckTransaction();
 
         transaction1.setCardId(transactionEntity.getCardEntity().getCardNumber());
@@ -101,7 +101,7 @@ public class TransactionService {
         if(transactionEntity == null){
             throw new IllegalArgumentException("La transacción que se desea anular no existe.");
         }
-
+        //***FALTAN VALIDACIONES
         transactionEntity.setCancelled(true);
 
         transactionJpaRepository.save(transactionEntity);

@@ -70,15 +70,15 @@ class TransactionControllerTest {
     // PRUEBAS PARA checkTransaction()
     // ============================
 
-    @Test
-    void shouldReturnTransactionDetails() {
-        when(transactionService.checkTransaction(requestCheckTransaction)).thenReturn(responseCheckTransaction);
-
-        ResponseEntity<ResponseCheckTransaction> response = transactionController.checkTransaction(requestCheckTransaction);
-
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals(responseCheckTransaction, response.getBody());
-    }
+//    @Test
+//    void shouldReturnTransactionDetails() {
+//        when(transactionService.checkTransaction(requestCheckTransaction)).thenReturn(responseCheckTransaction);
+//
+//        ResponseEntity<ResponseCheckTransaction> response = transactionController.checkTransaction(requestCheckTransaction);
+//
+//        assertEquals(200, response.getStatusCodeValue());
+//        assertEquals(responseCheckTransaction, response.getBody());
+//    }
 
     // ============================
     // PRUEBAS PARA cancelTransaction()

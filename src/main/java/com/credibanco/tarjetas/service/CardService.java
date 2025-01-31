@@ -1,7 +1,7 @@
 package com.credibanco.tarjetas.service;
 
-import com.credibanco.tarjetas.dto.BalanceCard;
-import com.credibanco.tarjetas.dto.card.RequestCreateCard;
+import com.credibanco.tarjetas.dto.card.BalanceCard;
+import com.credibanco.tarjetas.dto.card.CreateCardRequest;
 import com.credibanco.tarjetas.persistencia.model.CardEntity;
 import com.credibanco.tarjetas.persistencia.repository.CardJpaRepository;
 import com.credibanco.tarjetas.util.DateUtil;
@@ -23,7 +23,7 @@ public class CardService {
         this.cardJpaRepository = cardJpaRepository;
     }
 
-    public String createCard(RequestCreateCard card){
+    public String createCard(CreateCardRequest card){
         CardEntity cardEntity = new CardEntity();
         String numberCard;
         CardEntity cardEntity1;
@@ -118,7 +118,6 @@ public class CardService {
         CardEntity cardEntity = cardJpaRepository.findByCardNumber(cardId);
 
         BalanceCard balanceCard = new BalanceCard();
-        balanceCard.setCardId(cardEntity.getCardNumber());
         balanceCard.setBalance(cardEntity.getBalance());
 
         return balanceCard;

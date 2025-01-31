@@ -1,7 +1,11 @@
 package com.credibanco.tarjetas.dto.transaction;
 
+import jakarta.validation.constraints.NotBlank;
+
 public class RequestCancelTransaction {
+    @NotBlank(message = "El cardId no puede estar vacío")
     private String cardId;
+    @NotBlank(message = "El transactionId no puede estar vacío")
     private String transactionId;
 
     public String getCardId() {
