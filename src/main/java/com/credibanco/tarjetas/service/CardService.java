@@ -28,6 +28,14 @@ public class CardService {
         String numberCard;
         CardEntity cardEntity1;
 
+        if(card.getProductId().length() != 6){
+            throw new IllegalArgumentException("Número de digitos de productId no valido.");
+        }
+
+        if(card.getHolderName().length() == 0){
+            throw new IllegalArgumentException("El holderName no puede estar vacio.");
+        }
+
         //se valida que no exista ya una tarjeta con el mismo numero
         do {
             numberCard = card.getProductId().concat(RandomNumberGenerator.generateNumber(10));
@@ -128,6 +136,10 @@ public class CardService {
 
         if (cardEntity == null) {
             throw new IllegalArgumentException(TARJETA_NO_EXISTE);
+        }
+
+        if (cardEntity.getBlocked().booleanValue()) {
+            throw new IllegalArgumentException("la tarjeta se encuentra bloqueada");
         }
 
         BalanceCard balanceCard = new BalanceCard();

@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -31,7 +32,8 @@ public class TransactionController {
     @ApiResponse(responseCode = "500", description = "Error interno al procesar la compra")
 
     @PostMapping("/purchase")
-    public ResponseEntity<ResponsePurchase> makePurchase(@RequestBody @Valid RequestPurchase purchase) {
+    public ResponseEntity<ResponsePurchase> makePurchase(@Valid @RequestBody  RequestPurchase purchase) {
+
         ResponsePurchase response = new ResponsePurchase();
         response.setNumberTransaction(transactionService.makePurchase(purchase.getCardId(), purchase.getPrice()));
         return ResponseEntity.ok(response);
