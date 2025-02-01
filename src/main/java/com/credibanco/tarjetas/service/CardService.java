@@ -17,22 +17,22 @@ public class CardService {
 
     private final CardJpaRepository cardJpaRepository;
     private static final String NUMERO_DE_DIGITOS_INVALIDO = "Numéro de digitos de cardId no valido";
-
+    private static final String TARJETA_NO_EXISTE = "Tarjeta no existe.";
 
     public CardService(CardJpaRepository cardJpaRepository) {
         this.cardJpaRepository = cardJpaRepository;
     }
 
-    public String createCard(CreateCardRequest card){
+    public String createCard(CreateCardRequest card) {
         CardEntity cardEntity = new CardEntity();
         String numberCard;
         CardEntity cardEntity1;
 
         //se valida que no exista ya una tarjeta con el mismo numero
-        do{
+        do {
             numberCard = card.getProductId().concat(RandomNumberGenerator.generateNumber(10));
             cardEntity1 = cardJpaRepository.findByCardNumber(numberCard);
-        }while(cardEntity1 != null);
+        } while (cardEntity1 != null);
 
         //Numero de tarjeta
         cardEntity.setCardNumber(numberCard);
@@ -42,80 +42,93 @@ public class CardService {
         LocalDate expirationDate = DateUtil.getPlusYears(LocalDate.now(), 3);
         cardEntity.setExpirationDate(expirationDate);
 
-        cardEntity1 =  cardJpaRepository.save(cardEntity);
+        cardEntity1 = cardJpaRepository.save(cardEntity);
 
         return cardEntity1.getCardNumber();
     }
+
     //Activar Tarjeta
-    public void activateCard(String cardId){
+    public void activateCard(String cardId) {
 
-        if(cardId.length() != 16){
+        if (cardId.length() != 16) {
             throw new IllegalArgumentException(NUMERO_DE_DIGITOS_INVALIDO);
         }
         CardEntity cardEntity = cardJpaRepository.findByCardNumber(cardId);
 
-        if(cardEntity != null){
-            cardEntity.setActive(true);
-            cardJpaRepository.save(cardEntity);
+        if (cardEntity == null) {
+            throw new IllegalArgumentException(TARJETA_NO_EXISTE);
         }
+
+        cardEntity.setActive(true);
+        cardJpaRepository.save(cardEntity);
+
     }
-    //Bloquear tarjeta
-    public void blockCard(String cardId){
 
-        if(cardId.length() != 16){
+    //Bloquear tarjeta
+    public void blockCard(String cardId) {
+
+        if (cardId.length() != 16) {
             throw new IllegalArgumentException(NUMERO_DE_DIGITOS_INVALIDO);
         }
+
         CardEntity cardEntity = cardJpaRepository.findByCardNumber(cardId);
 
-        if(cardEntity != null){
-            cardEntity.setBlocked(true);
-            cardJpaRepository.save(cardEntity);
+        if (cardEntity == null) {
+            throw new IllegalArgumentException(TARJETA_NO_EXISTE);
         }
+
+        cardEntity.setBlocked(true);
+        cardJpaRepository.save(cardEntity);
+
     }
 
 
     /**
      * Recargar tarjeta
-     * */
-    public CardEntity rechargeCard(String cardId, BigDecimal balance){
+     */
+    public void rechargeCard(String cardId, BigDecimal balance) {
 
-        if(cardId.length() != 16){
+        if (cardId.length() != 16) {
             throw new IllegalArgumentException(NUMERO_DE_DIGITOS_INVALIDO);
         }
 
-        if(balance.compareTo(BigDecimal.ZERO) < 0){
+        if (balance.compareTo(BigDecimal.ZERO) < 0) {
             throw new IllegalArgumentException("El monto a recargar no valido");
         }
 
         CardEntity cardEntity = cardJpaRepository.findByCardNumber(cardId);
 
-        if(cardEntity == null){
-            throw new IllegalArgumentException("Tarjeta no existe");
+        if (cardEntity == null) {
+            throw new IllegalArgumentException("TARJETA_NO_EXISTE");
         }
 
-        if(cardEntity.getBlocked().booleanValue()){
+        if (cardEntity.getBlocked().booleanValue()) {
             throw new IllegalArgumentException("la tarjeta se encuentra bloqueada");
         }
 
-        if(!cardEntity.getActive().booleanValue()){
+        if (!cardEntity.getActive().booleanValue()) {
             throw new IllegalArgumentException("la tarjeta no se encuentra activada");
         }
 
-        if(cardEntity.getExpirationDate().isBefore(LocalDate.now()) ){
+        if (cardEntity.getExpirationDate().isBefore(LocalDate.now())) {
             throw new IllegalArgumentException("la tarjeta esta expirada");
         }
 
         BigDecimal totalBalance = AddBigDecimal.execute(cardEntity.getBalance(), balance);
         cardEntity.setBalance(totalBalance);
-        return cardJpaRepository.save(cardEntity);
+        cardJpaRepository.save(cardEntity);
     }
 
-    public BalanceCard checkBalance(String cardId){
+    public BalanceCard checkBalance(String cardId) {
 
-        if(cardId.length() != 16){
+        if (cardId.length() != 16) {
             throw new IllegalArgumentException(NUMERO_DE_DIGITOS_INVALIDO);
         }
         CardEntity cardEntity = cardJpaRepository.findByCardNumber(cardId);
+
+        if (cardEntity == null) {
+            throw new IllegalArgumentException(TARJETA_NO_EXISTE);
+        }
 
         BalanceCard balanceCard = new BalanceCard();
         balanceCard.setBalance(cardEntity.getBalance());

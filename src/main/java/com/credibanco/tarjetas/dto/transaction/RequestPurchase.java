@@ -1,4 +1,4 @@
-package com.credibanco.tarjetas.dto;
+package com.credibanco.tarjetas.dto.transaction;
 
 import jakarta.validation.constraints.NotBlank;
 

@@ -1,7 +1,5 @@
 package com.credibanco.tarjetas.dto.card;
 
-import jakarta.validation.constraints.NotBlank;
-
 import java.math.BigDecimal;
 
 public class RechargeBalanceRequest {

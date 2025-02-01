@@ -1,15 +1,14 @@
 package com.credibanco.tarjetas.controller;
 
 
+import com.credibanco.tarjetas.dto.card.EnrollCard;
 import com.credibanco.tarjetas.dto.card.BalanceCard;
-import com.credibanco.tarjetas.dto.EnrollCard;
-import com.credibanco.tarjetas.dto.card.RechargeBalanceRequest;
 import com.credibanco.tarjetas.dto.card.CreateCardRequest;
+import com.credibanco.tarjetas.dto.card.RechargeBalanceRequest;
 import com.credibanco.tarjetas.service.CardService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -28,24 +27,22 @@ public class CardController {
     }
 
     @Operation(summary = "Crear una tarjeta", description = "Genera un número de tarjeta único y lo devuelve en la respuesta.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "La tarjeta fue creada correctamente"),
-            @ApiResponse(responseCode = "400", description = "Solicitud inválida"),
-            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
-    })
+    @ApiResponse(responseCode = "201", description = "La tarjeta fue creada correctamente")
+    @ApiResponse(responseCode = "400", description = "Solicitud inválida")
+    @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+
     @PostMapping
     public ResponseEntity<String> createCard(
-            @RequestBody @Valid CreateCardRequest card){
+            @RequestBody @Valid CreateCardRequest card) {
         String numberCard = cardService.createCard(card);
         return ResponseEntity.status(HttpStatus.CREATED).body(numberCard);
     }
 
     @Operation(summary = "Activar una tarjeta", description = "Activa una tarjeta previamente creada.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "La tarjeta fue activada con éxito"),
-            @ApiResponse(responseCode = "400", description = "Datos de activación inválidos"),
-            @ApiResponse(responseCode = "404", description = "Tarjeta no encontrada")
-    })
+    @ApiResponse(responseCode = "200", description = "La tarjeta fue activada con éxito")
+    @ApiResponse(responseCode = "400", description = "Datos de activación inválidos")
+    @ApiResponse(responseCode = "404", description = "Tarjeta no encontrada")
+
     @PatchMapping("/enroll")
     public ResponseEntity<String> activateCard(
             @RequestBody @Parameter(description = "Número de la tarjeta a activar") EnrollCard enrollCard) {
@@ -54,23 +51,21 @@ public class CardController {
     }
 
     @Operation(summary = "Bloquear una tarjeta", description = "Marca una tarjeta como bloqueada.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "La tarjeta fue bloqueada con éxito"),
-            @ApiResponse(responseCode = "404", description = "Tarjeta no encontrada"),
-            @ApiResponse(responseCode = "500", description = "Error interno al bloquear la tarjeta")
-    })
+    @ApiResponse(responseCode = "200", description = "La tarjeta fue bloqueada con éxito")
+    @ApiResponse(responseCode = "404", description = "Tarjeta no encontrada")
+    @ApiResponse(responseCode = "500", description = "Error interno al bloquear la tarjeta")
+
     @PatchMapping("/{cardId}/block")
-    public ResponseEntity<String> blockCard(@PathVariable @Parameter(description = "Número de la tarjeta a bloquear")  String cardId) {
+    public ResponseEntity<String> blockCard(@PathVariable @Parameter(description = "Número de la tarjeta a bloquear") String cardId) {
         cardService.blockCard(cardId);
         return ResponseEntity.ok("Tarjeta bloqueada correctamente");
     }
 
     @Operation(summary = "Recargar saldo a una tarjeta", description = "Añade fondos a una tarjeta activa.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Saldo recargado exitosamente"),
-            @ApiResponse(responseCode = "400", description = "Solicitud inválida"),
-            @ApiResponse(responseCode = "404", description = "Tarjeta no encontrada")
-    })
+    @ApiResponse(responseCode = "200", description = "Saldo recargado exitosamente")
+    @ApiResponse(responseCode = "400", description = "Solicitud inválida")
+    @ApiResponse(responseCode = "404", description = "Tarjeta no encontrada")
+
     @PostMapping("/{cardId}/recharge")
     public ResponseEntity<String> rechargeCard(
             @PathVariable @Parameter(description = "Número de la tarjeta a recargar") String cardId,
@@ -78,11 +73,10 @@ public class CardController {
         cardService.rechargeCard(cardId, rechargeRequest.getBalance());
         return ResponseEntity.ok("Tarjeta recargada correctamente");
     }
+
     @Operation(summary = "Consultar saldo de una tarjeta", description = "Obtiene el saldo disponible de una tarjeta existente.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Saldo consultado exitosamente"),
-            @ApiResponse(responseCode = "404", description = "Tarjeta no encontrada")
-    })
+    @ApiResponse(responseCode = "200", description = "Saldo consultado exitosamente")
+    @ApiResponse(responseCode = "404", description = "Tarjeta no encontrada")
     @GetMapping("/{cardId}/balance")
     public ResponseEntity<BalanceCard> checkAccountBalance(
             @PathVariable @Parameter(description = "Número de la tarjeta a consultar") String cardId) {

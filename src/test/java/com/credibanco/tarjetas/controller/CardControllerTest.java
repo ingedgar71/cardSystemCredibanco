@@ -1,10 +1,9 @@
 package com.credibanco.tarjetas.controller;
 
+import com.credibanco.tarjetas.dto.card.EnrollCard;
 import com.credibanco.tarjetas.dto.card.BalanceCard;
-import com.credibanco.tarjetas.dto.EnrollCard;
-import com.credibanco.tarjetas.dto.card.BalanceCard2;
 import com.credibanco.tarjetas.dto.card.CreateCardRequest;
-import com.credibanco.tarjetas.persistencia.model.CardEntity;
+import com.credibanco.tarjetas.dto.card.RechargeBalanceRequest;
 import com.credibanco.tarjetas.service.CardService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,7 +15,7 @@ import org.springframework.http.ResponseEntity;
 
 import java.math.BigDecimal;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -29,93 +28,80 @@ class CardControllerTest {
     @InjectMocks
     private CardController cardController;
 
-    private CardEntity cardEntity;
-    private BalanceCard2 balanceCard2;
+    private CreateCardRequest createCardRequest;
+    private EnrollCard enrollCard;
+    private RechargeBalanceRequest rechargeBalanceRequest;
+    private BalanceCard balanceCard;
 
     @BeforeEach
     void setUp() {
-        cardEntity = new CardEntity();
-        cardEntity.setIdCard(1L);
-        cardEntity.setCardNumber("1234567890123456");
+        createCardRequest = new CreateCardRequest();
+        createCardRequest.setProductId("123456");
+        createCardRequest.setHolderName("ANGELICA LOPEZ");
 
-        balanceCard2 = new BalanceCard2();
-        balanceCard2.setCardId("1234567890123456");
-        balanceCard2.setBalance(new BigDecimal("500.00"));
+        enrollCard = new EnrollCard();
+        enrollCard.setCardId("1234561234567890");
+
+        rechargeBalanceRequest = new RechargeBalanceRequest();
+        rechargeBalanceRequest.setBalance(new BigDecimal("500.00"));
+
+        balanceCard = new BalanceCard();
+        balanceCard.setBalance(new BigDecimal("1000.00"));
     }
-
-
-    // ============================
-    // PRUEBAS PARA createCard()
-    // ============================
 
     @Test
-    void shouldCreateCardSuccessfully() {
-        CreateCardRequest request = new CreateCardRequest();
-        request.setProductId("1234");
-        request.setHolderName("John Doe");
+    void createCard_ShouldReturnCreated() {
+        when(cardService.createCard(any(CreateCardRequest.class))).thenReturn("1234561234567890");
 
-        when(cardService.createCard(any(CreateCardRequest.class))).thenReturn("1234567890123456");
+        ResponseEntity<String> response = cardController.createCard(createCardRequest);
 
-        ResponseEntity<String> response = cardController.createCard(request);
-
-        assertEquals(201, response.getStatusCodeValue());
-        assertEquals("1234567890123456", response.getBody());
+        assertEquals(201, response.getStatusCode().value());
+        assertEquals("1234561234567890", response.getBody());
+        verify(cardService, times(1)).createCard(createCardRequest);
     }
-
-    // ============================
-    // PRUEBAS PARA activateCard()
-    // ============================
 
     @Test
-    void shouldActivateCard() {
-        EnrollCard enrollCard = new EnrollCard();
-        enrollCard.setCardId("1234567890123456");
+    void activateCard_ShouldReturnOk() {
+        doNothing().when(cardService).activateCard("1234561234567890");
 
-        doNothing().when(cardService).activateCard("1234567890123456");
+        ResponseEntity<String> response = cardController.activateCard(enrollCard);
 
-        cardController.activateCard(enrollCard);
-
-        verify(cardService, times(1)).activateCard("1234567890123456");
+        assertEquals(200, response.getStatusCode().value());
+        assertEquals("Tarjeta activada correctamente", response.getBody());
+        verify(cardService, times(1)).activateCard("1234561234567890");
     }
-
-    // ============================
-    // PRUEBAS PARA blockCard()
-    // ============================
 
     @Test
-    void shouldBlockCard() {
-        doNothing().when(cardService).blockCard("1234567890123456");
+    void blockCard_ShouldReturnOk() {
+        doNothing().when(cardService).blockCard("1234561234567890");
 
-        cardController.blockCard("1234567890123456");
+        ResponseEntity<String> response = cardController.blockCard("1234561234567890");
 
-        verify(cardService, times(1)).blockCard("1234567890123456");
+        assertEquals(200, response.getStatusCode().value());
+        assertEquals("Tarjeta bloqueada correctamente", response.getBody());
+        verify(cardService, times(1)).blockCard("1234561234567890");
     }
 
-    // ============================
-    // PRUEBAS PARA rechargeCard()
-    // ============================
+    @Test
+    void rechargeCard_ShouldReturnOk() {
+        doNothing().when(cardService).rechargeCard("1234561234567890", new BigDecimal("500.00"));
 
-//    @Test
-//    void shouldRechargeCard() {
-//        doNothing().when(cardService).rechargeCard("1234567890123456", new BigDecimal("100.00"));
-//
-//        cardController.rechargeCard(balanceCard);
-//
-//        verify(cardService, times(1)).rechargeCard("1234567890123456", new BigDecimal("500.00"));
-//    }
+        ResponseEntity<String> response = cardController.rechargeCard("1234561234567890", rechargeBalanceRequest);
 
-    // ============================
-    // PRUEBAS PARA checkAccountBalance()
-    // ============================
+        assertEquals(200, response.getStatusCode().value());
+        assertEquals("Tarjeta recargada correctamente", response.getBody());
+        verify(cardService, times(1)).rechargeCard("1234561234567890", new BigDecimal("500.00"));
+    }
 
-//    @Test
-//    void shouldReturnBalanceSuccessfully() {
-//        when(cardService.checkBalance("1234567890123456")).thenReturn(balanceCard2);
-//
-//        ResponseEntity<BalanceCard> response = cardController.checkAccountBalance("1234567890123456");
-//
-//        assertEquals(200, response.getStatusCodeValue());
-//        assertEquals(balanceCard2, response.getBody());
-//    }
+    @Test
+    void checkAccountBalance_ShouldReturnBalance() {
+        when(cardService.checkBalance("1234561234567890")).thenReturn(balanceCard);
+
+        ResponseEntity<BalanceCard> response = cardController.checkAccountBalance("1234561234567890");
+
+        assertEquals(200, response.getStatusCode().value());
+        assertEquals(new BigDecimal("1000.00"), response.getBody().getBalance());
+        verify(cardService, times(1)).checkBalance("1234561234567890");
+    }
 
 }

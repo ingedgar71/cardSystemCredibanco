@@ -1,4 +1,4 @@
-package com.credibanco.tarjetas.dto;
+package com.credibanco.tarjetas.dto.card;
 
 public class EnrollCard {
     private String cardId;

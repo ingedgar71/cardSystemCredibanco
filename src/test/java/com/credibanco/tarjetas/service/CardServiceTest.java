@@ -26,10 +26,16 @@ class CardServiceTest {
     @InjectMocks
     private CardService cardService;
 
+    private CreateCardRequest createCardRequest;
     private CardEntity cardEntity;
 
     @BeforeEach
     void setUp() {
+
+        createCardRequest = new CreateCardRequest();
+        createCardRequest.setProductId("123456");
+        createCardRequest.setHolderName("DANIEL VELANDIA");
+
         cardEntity = new CardEntity();
         cardEntity.setCardNumber("1234561234567890");
         cardEntity.setHolderName("DANIEL VELANDIA");
@@ -39,34 +45,22 @@ class CardServiceTest {
         cardEntity.setBlocked(false);
     }
 
-    // ============================
-    // PRUEBAS PARA createCard()
-    // Deberia crear la tarjeta satisfactoriamente
-    // ============================
-
+    // Debería crear una tarjeta exitosamente
     @Test
-    void shouldCreateCardSuccessfully() {
-        CreateCardRequest request = new CreateCardRequest();
-        request.setProductId("123456");
-        request.setHolderName("DANIEL VELANDIA");
-
+    void createCard_ShouldReturnNewCardNumber() {
         when(cardJpaRepository.findByCardNumber(anyString())).thenReturn(null);
         when(cardJpaRepository.save(any(CardEntity.class))).thenReturn(cardEntity);
 
-        String generatedCardNumber = cardService.createCard(request);
+        String cardNumber = cardService.createCard(createCardRequest);
 
-        assertNotNull(generatedCardNumber);
-        assertEquals("1234561234567890", generatedCardNumber);
+        assertNotNull(cardNumber);
+        assertEquals("1234561234567890", cardNumber);
         verify(cardJpaRepository, times(1)).save(any(CardEntity.class));
     }
 
-    // ============================
-    // PRUEBAS PARA activateCard()
-    // Debería activar la tarjeta
-    // ============================
-
+    //Deberia activar la tarjeta solicitada
     @Test
-    void shouldActivateCard() {
+    void activateCard_ShouldActivateCard() {
         when(cardJpaRepository.findByCardNumber("1234561234567890")).thenReturn(cardEntity);
 
         cardService.activateCard("1234561234567890");
@@ -75,18 +69,9 @@ class CardServiceTest {
         verify(cardJpaRepository, times(1)).save(cardEntity);
     }
 
+    //Debería marcar la tarjeta como bloqueada
     @Test
-    void shouldThrowExceptionForInvalidCardIdInActivation() {
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> cardService.activateCard("123456"));
-        assertEquals("Numéro de digitos de cardId no valido", exception.getMessage());
-    }
-
-    // ============================
-    // PRUEBAS PARA blockCard()
-    // ============================
-
-    @Test
-    void shouldBlockCard() {
+    void blockCard_ShouldBlockCard() {
         when(cardJpaRepository.findByCardNumber("1234561234567890")).thenReturn(cardEntity);
 
         cardService.blockCard("1234561234567890");
@@ -94,74 +79,106 @@ class CardServiceTest {
         assertTrue(cardEntity.getBlocked());
         verify(cardJpaRepository, times(1)).save(cardEntity);
     }
-
+    //Debería recargar la tarjeta
     @Test
-    void shouldThrowExceptionForInvalidCardIdInBlocking() {
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> cardService.blockCard("1234"));
-        assertEquals("Numéro de digitos de cardId no valido", exception.getMessage());
-    }
-
-    // ============================
-    // PRUEBAS PARA rechargeCard()
-    // ============================
-
-    @Test
-    void shouldRechargeCardSuccessfully() {
-        cardEntity.setActive(true);
+    void rechargeCard_ShouldIncreaseBalance() {
         when(cardJpaRepository.findByCardNumber("1234561234567890")).thenReturn(cardEntity);
-        when(cardJpaRepository.save(any(CardEntity.class))).thenReturn(cardEntity);
 
-        CardEntity result = cardService.rechargeCard("1234561234567890", new BigDecimal("100.00"));
+        cardEntity.setActive(true);
+        cardService.rechargeCard("1234561234567890", new BigDecimal("500.00"));
 
-        assertEquals(new BigDecimal("100.00"), result.getBalance());
+        assertEquals(new BigDecimal("500.00"), cardEntity.getBalance());
         verify(cardJpaRepository, times(1)).save(cardEntity);
     }
 
     @Test
-    void shouldThrowExceptionForBlockedCard() {
-        cardEntity.setBlocked(true);
-        when(cardJpaRepository.findByCardNumber("1234567890123456")).thenReturn(cardEntity);
-
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> cardService.rechargeCard("1234567890123456", new BigDecimal("50.00")));
-        assertEquals("la tarjeta se encuentra bloqueada", exception.getMessage());
-    }
-
-    @Test
-    void shouldThrowExceptionForInactiveCard() {
-        when(cardJpaRepository.findByCardNumber("1234567890123456")).thenReturn(cardEntity);
-
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> cardService.rechargeCard("1234567890123456", new BigDecimal("50.00")));
-        assertEquals("la tarjeta no se encuentra activada", exception.getMessage());
-    }
-
-    @Test
-    void shouldThrowExceptionForExpiredCard() {
-        cardEntity.setExpirationDate(LocalDate.now().minusDays(1));
-        cardEntity.setActive(true);
-        when(cardJpaRepository.findByCardNumber("1234567890123456")).thenReturn(cardEntity);
-
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> cardService.rechargeCard("1234567890123456", new BigDecimal("50.00")));
-        assertEquals("la tarjeta esta expirada", exception.getMessage());
-    }
-
-    // ============================
-    // PRUEBAS PARA checkBalance()
-    // ============================
-
-    @Test
-    void shouldReturnBalanceCorrectly() {
+    void checkBalance_ShouldReturnCorrectBalance() {
         when(cardJpaRepository.findByCardNumber("1234561234567890")).thenReturn(cardEntity);
 
-        BalanceCard balance = cardService.checkBalance("1234561234567890");
+        BalanceCard balanceCard = cardService.checkBalance("1234561234567890");
 
-        assertNotNull(balance);
-        //assertEquals("1234561234567890", balance.getCardId());
-        assertEquals(BigDecimal.ZERO, balance.getBalance());
+        assertEquals(BigDecimal.ZERO, balanceCard.getBalance());
+        verify(cardJpaRepository, times(1)).findByCardNumber("1234561234567890");
+    }
+    //Debería disparar excepción si el ProductId no es valido
+    @Test
+    void createCard_ShouldThrowExceptionWhenProductIdIsInvalid() {
+        createCardRequest.setProductId(null);
+        assertThrows(NullPointerException.class, () -> cardService.createCard(createCardRequest));
+    }
+    //En el proceso de activación Debería disparar excepción si el numero de tarjeta no existe
+    @Test
+    void activateCard_ShouldThrowExceptionWhenCardNotFound() {
+        when(cardJpaRepository.findByCardNumber("1234561234567890")).thenReturn(null);
+        assertThrows(IllegalArgumentException.class, () -> cardService.activateCard("1234561234567890"));
+    }
+    //En el proceso de bloqueo Debería disparar excepción si el numero de tarjeta no existe
+    @Test
+    void blockCard_ShouldThrowExceptionWhenCardNotFound() {
+        when(cardJpaRepository.findByCardNumber("1234561234567890")).thenReturn(null);
+        assertThrows(IllegalArgumentException.class, () -> cardService.blockCard("1234561234567890"));
+    }
+    //En el proceso de recarga de tarjeta Debería disparar excepción si la tarjeta está bloqueada
+    @Test
+    void rechargeCard_ShouldThrowExceptionWhenCardIsBlocked() {
+        cardEntity.setBlocked(true);
+        when(cardJpaRepository.findByCardNumber("1234561234567890")).thenReturn(cardEntity);
+        assertThrows(IllegalArgumentException.class, () -> cardService.rechargeCard("1234561234567890", new BigDecimal("500.00")));
+    }
+    //En el proceso de recarga de tarjeta Debería disparar excepción si el valor de la recarga es negativo
+    @Test
+    void rechargeCard_ShouldThrowExceptionWhenBalanceIsNegative() {
+        assertThrows(IllegalArgumentException.class, () -> cardService.rechargeCard("1234561234567890", new BigDecimal("-100.00")));
+    }
+    //En el proceso de consulta de saldo de tarjeta Debería disparar excepción si la tarjeta no existe
+    @Test
+    void checkBalance_ShouldThrowExceptionWhenCardNotFound() {
+        when(cardJpaRepository.findByCardNumber("1234561234567890")).thenReturn(null);
+        assertThrows(IllegalArgumentException.class, () -> cardService.checkBalance("1234561234567890"));
+    }
+
+
+    @Test
+    void activateCard_ShouldThrowExceptionWhenCardIdLengthIsInvalid() {
+        assertThrows(IllegalArgumentException.class, () -> cardService.activateCard("12345"));
     }
 
     @Test
-    void shouldThrowExceptionForInvalidCardIdInCheckBalance() {
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> cardService.checkBalance("123456"));
-        assertEquals("Numéro de digitos de cardId no valido", exception.getMessage());
+    void blockCard_ShouldThrowExceptionWhenCardIdLengthIsInvalid() {
+        assertThrows(IllegalArgumentException.class, () -> cardService.blockCard("12345"));
     }
+
+    @Test
+    void rechargeCard_ShouldThrowExceptionWhenCardIdLengthIsInvalid() {
+        assertThrows(IllegalArgumentException.class, () -> cardService.rechargeCard("12345", new BigDecimal("500.00")));
+    }
+
+    @Test
+    void checkBalance_ShouldThrowExceptionWhenCardIdLengthIsInvalid() {
+        assertThrows(IllegalArgumentException.class, () -> cardService.checkBalance("12345"));
+    }
+
+    @Test
+    void rechargeCard_ShouldThrowExceptionWhenCardDoesNotExist() {
+        when(cardJpaRepository.findByCardNumber("1234561234567890")).thenReturn(null);
+        assertThrows(IllegalArgumentException.class, () -> cardService.rechargeCard("1234561234567890", new BigDecimal("500.00")));
+    }
+
+    @Test
+    void rechargeCard_ShouldThrowExceptionWhenCardIsNotActivated() {
+        cardEntity.setActive(false);
+        when(cardJpaRepository.findByCardNumber("1234561234567890")).thenReturn(cardEntity);
+        assertThrows(IllegalArgumentException.class, () -> cardService.rechargeCard("1234561234567890", new BigDecimal("500.00")));
+    }
+
+    @Test
+    void rechargeCard_ShouldThrowExceptionWhenCardIsExpired() {
+        cardEntity.setExpirationDate(LocalDate.now().minusDays(1));
+        cardEntity.setActive(true);
+        when(cardJpaRepository.findByCardNumber("1234561234567890")).thenReturn(cardEntity);
+        assertThrows(IllegalArgumentException.class, () -> cardService.rechargeCard("1234561234567890", new BigDecimal("500.00")));
+    }
+
 }
+
+

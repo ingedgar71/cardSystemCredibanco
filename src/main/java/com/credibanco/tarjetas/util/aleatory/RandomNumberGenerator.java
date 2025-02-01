@@ -1,9 +1,10 @@
 package com.credibanco.tarjetas.util.aleatory;
 
-import java.util.Random;
+import java.security.SecureRandom;
 
 public class RandomNumberGenerator {
-    private static final Random RANDOM = new Random();
+
+    private static final SecureRandom RANDOM = new SecureRandom();
 
     private RandomNumberGenerator() {
     }
@@ -20,7 +21,7 @@ public class RandomNumberGenerator {
         long numeroAleatorio;
         do {
             numeroAleatorio = RANDOM.nextLong(maxValue + 1l); // Genera un número en el rango [0, maxValue]
-        }while(numeroAleatorio == 0l);
+        } while (numeroAleatorio == 0l);
 
         int cerosFaltantes = maxDigitos - String.valueOf(numeroAleatorio).length();
 
