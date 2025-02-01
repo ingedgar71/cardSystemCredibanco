@@ -1,7 +1,7 @@
 package com.credibanco.tarjetas.controller;
 
-import com.credibanco.tarjetas.dto.transaction.RequestPurchase;
 import com.credibanco.tarjetas.dto.transaction.RequestCancelTransaction;
+import com.credibanco.tarjetas.dto.transaction.RequestPurchase;
 import com.credibanco.tarjetas.dto.transaction.ResponseCheckTransaction;
 import com.credibanco.tarjetas.dto.transaction.ResponsePurchase;
 import com.credibanco.tarjetas.service.TransactionService;
@@ -11,7 +11,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

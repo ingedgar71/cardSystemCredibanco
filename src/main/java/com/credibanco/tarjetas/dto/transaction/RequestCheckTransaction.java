@@ -1,6 +1,8 @@
 package com.credibanco.tarjetas.dto.transaction;
 
-public class RequestCheckTransaction {
+import com.credibanco.tarjetas.exception.GlobalExceptionHandler;
+
+public class RequestCheckTransaction extends GlobalExceptionHandler {
     private String cardId;
     private String transactionId;
 

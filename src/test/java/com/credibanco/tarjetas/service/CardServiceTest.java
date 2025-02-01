@@ -179,6 +179,29 @@ class CardServiceTest {
         assertThrows(IllegalArgumentException.class, () -> cardService.rechargeCard("1234561234567890", new BigDecimal("500.00")));
     }
 
+    @Test
+    void createCard_ShouldThrowExceptionWhenProductIdLengthNot6() {
+        CreateCardRequest card= new CreateCardRequest();
+        card.setProductId("123");
+        card.setHolderName("DIANA JIMENEZ");
+        assertThrows(IllegalArgumentException.class, () -> cardService.createCard(card));
+    }
+
+    @Test
+    void createCard_ShouldThrowExceptionWhenHoldernameLengthZero() {
+        CreateCardRequest card= new CreateCardRequest();
+        card.setProductId("123456");
+        card.setHolderName("");
+        assertThrows(IllegalArgumentException.class, () -> cardService.createCard(card));
+    }
+
+    @Test
+    void checkBalance_ShouldThrowExceptionWhenCardIsBlock() {
+        when(cardJpaRepository.findByCardNumber("1234561234567890")).thenReturn(cardEntity);
+        cardEntity.setBlocked(true);
+        assertThrows(IllegalArgumentException.class, () -> cardService.checkBalance("1234561234567890"));
+    }
+
 }
 
 

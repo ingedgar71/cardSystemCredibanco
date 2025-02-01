@@ -32,7 +32,7 @@ public class CardService {
             throw new IllegalArgumentException("Número de digitos de productId no valido.");
         }
 
-        if(card.getHolderName().length() == 0){
+        if(card.getHolderName().isEmpty()){
             throw new IllegalArgumentException("El holderName no puede estar vacio.");
         }
 
