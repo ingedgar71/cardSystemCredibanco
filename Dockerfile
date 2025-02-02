@@ -11,4 +11,4 @@ COPY target/tarjetas-1.0.0.jar tarjetas.jar
 EXPOSE 8080
 
 # Comando para ejecutar la aplicación
-ENTRYPOINT ["java", "-jar", "tarjetas.jar"]
+ENTRYPOINT ["java", "-jar", "tarjetas.jar", "--spring.profiles.active=prod"]
